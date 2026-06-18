@@ -1,56 +1,80 @@
-import { useEffect } from "react";
+import React from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import "@/index.css";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-import { HOME } from "@/constants/testIds";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import CartDrawer from "@/components/CartDrawer";
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
+import Home from "@/pages/Home";
+import Catalog from "@/pages/Catalog";
+import ProductDetail from "@/pages/ProductDetail";
+import Checkout from "@/pages/Checkout";
+import PaymentResult from "@/pages/PaymentResult";
+import Reprocann from "@/pages/Reprocann";
+import Login from "@/pages/Login";
+import AuthCallback from "@/pages/AuthCallback";
+import AdminLogin from "@/pages/AdminLogin";
+import AdminDashboard from "@/pages/AdminDashboard";
 
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
+function PublicLayout({ children }) {
   return (
-    <div>
-      <header className="App-header">
-        <a
-          data-testid={HOME.emergentLink}
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
-
-function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <>
+      <Header />
+      <main className="min-h-screen">{children}</main>
+      <Footer />
+      <CartDrawer />
+    </>
   );
 }
 
-export default App;
+function AppRoutes() {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
+
+  // Handle Emergent auth callback via hash redirect
+  if (location.hash?.includes("session_id=")) {
+    return <AuthCallback />;
+  }
+
+  if (isAdmin) {
+    return (
+      <Routes>
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+      </Routes>
+    );
+  }
+
+  return (
+    <PublicLayout>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/catalogo" element={<Catalog />} />
+        <Route path="/producto/:slug" element={<ProductDetail />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment/success" element={<PaymentResult />} />
+        <Route path="/payment/pending" element={<PaymentResult />} />
+        <Route path="/payment/failure" element={<PaymentResult />} />
+        <Route path="/reprocann" element={<Reprocann />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/auth-callback" element={<AuthCallback />} />
+      </Routes>
+    </PublicLayout>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </CartProvider>
+    </AuthProvider>
+  );
+}

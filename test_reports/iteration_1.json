@@ -1,0 +1,68 @@
+{
+  "summary": "First test iteration on Growshop Premium (Verdor). Backend pytest suite: 19/20 passing. One critical backend bug: POST /api/admin/products returns 500 due to duplicate 'images' kwarg in Product() constructor (server.py:506). Frontend flows tested via Playwright: Home, /catalogo (filter pills + search), add-to-cart, /checkout, /payment/success (MODO DEMO badge + Pago aprobado), /reprocann submission, /login (Google button present), /admin/login + dashboard (3 tabs + 19 products + add-product modal). Frontend admin 'Crear producto' crashes with Uncaught runtime errors overlay because of unhandled 500 from backend.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "POST /api/admin/products",
+        "issue": "Returns 500. server.py:506 builds Product(slug=..., images=p.images or [p.image], **p.model_dump()) which passes 'images' twice -> TypeError: Product() got multiple values for keyword argument 'images'. Fix: build a dict from p.model_dump() and override 'images' (and 'slug') keys, OR exclude 'images' from p.model_dump() before unpacking.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "AdminDashboard - saveProduct",
+        "issue": "On API error the app crashes with 'Uncaught runtime errors' CRA overlay instead of displaying a friendly error/toast. saveProduct in AdminDashboard.jsx does not catch axios errors. Add try/catch and show a toast/alert; this also masks the backend 500 to end users.",
+        "selector": "[data-testid='prod-form-submit']",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Admin -> Create product",
+        "issue": "Blocked by backend 500 (see backend critical). Once backend is fixed, retest CRUD + edit + delete via UI.",
+        "affected_selectors": ["[data-testid='admin-add-product']", "[data-testid='prod-form-submit']"]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Catalog filter pills",
+        "issues": ["Naming mismatch with PRD: pills use data-testid 'filter-<slug>' (e.g. filter-iluminacion) but task description mentions 'category-pill-<slug>'. UI works correctly; only testid name differs. Consider aligning naming for consistency."]
+      },
+      {
+        "screen": "REPROCANN form",
+        "issues": ["Input testids use 'rc-name', 'rc-dni', 'rc-email', 'rc-phone', 'rc-number', 'rc-notes' instead of the documented 'reprocann-*' prefix. Functional, but inconsistent with admin/checkout test-id conventions."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_growshop_api.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "FIX server.py:506 (admin_create_product) to avoid duplicate 'images' kwarg. Suggested patch: `data = p.model_dump(); prod = Product(slug=slugify(p.name), **{**data, 'images': p.images or [p.image]})`.",
+    "Wrap saveProduct() in AdminDashboard.jsx with try/catch and surface backend errors via toast/alert (no uncaught runtime overlay).",
+    "Align data-testid naming for category pills (filter-* vs category-pill-*) and REPROCANN inputs (rc-* vs reprocann-*) if you want them to match the PRD/test-id contract."
+  ],
+  "critical_code_review_comments": [
+    "server.py:506 — duplicate kwarg bug (root cause of admin product 500).",
+    "Frontend admin form has no error handling around axios calls; any 4xx/5xx breaks the page.",
+    "server.py uses deprecated @app.on_event('startup'/'shutdown'); consider FastAPI lifespan context manager.",
+    "MP_DEMO_MODE auto-flips to True when access token contains 'REEMPLAZAR' — good defensive default, but log this explicitly on startup so prod misconfig is obvious.",
+    "auth/session sets cookie with samesite='none' + secure=True; OK for cross-site, ensure frontend always uses HTTPS preview URL.",
+    "/api/auth/session stores `data['session_token']` from Emergent verbatim; ensure sessions collection has a unique index on session_token."
+  ],
+  "updated_files": [
+    "/app/backend/tests/__init__.py",
+    "/app/backend/tests/test_growshop_api.py"
+  ],
+  "success_rate": {"backend": "95% (19/20)", "frontend": "85% (admin product CRUD blocked by backend 500)"},
+  "test_credentials": "Admin: admin@growshop.ar / growshop2026. /app/memory/test_credentials.md NOT present.",
+  "seed_data_creation": "Tests created: TEST REPROCANN entry, TEST order in demo mode (~AR$ 370,000), TEST_buyer order via API. No admin TEST products persisted (backend create fails).",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend pytest file at /app/backend/tests/test_growshop_api.py covers: categories(7), products list/filter/search/featured/slug/404, orders demo checkout + persistence + empty cart 422, REPROCANN submit + 422, admin login (success/invalid/no-token), admin orders+reprocann list, admin product CRUD lifecycle (failing), auth/me 401. Frontend testids: filter-<slug> (not category-pill-*), rc-* for REPROCANN inputs, prod-form-{name,desc,price,stock,cat,image,submit} for admin product form. Demo MP redirect format: /payment/success?order_id=<uuid>&status=approved&demo=1. After backend fix, rerun test_product_crud_lifecycle and re-execute the admin UI add-product flow.",
+  "rca of the issue": "POST /api/admin/products 500: in server.py:506, `Product(slug=..., images=p.images or [p.image], **p.model_dump())` unpacks model_dump() which already contains an 'images' key. Python raises TypeError 'multiple values for keyword argument images'. Reproduce: admin POST {name,description,price,category,image,images:[...]} -> 500. Mitigation: pop 'images' from the dict before unpack, or restructure: `data = p.model_dump(); data['images'] = p.images or [p.image]; data['slug'] = slugify(p.name); prod = Product(**data)`."
+}
