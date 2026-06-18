@@ -1,188 +1,373 @@
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, Alert, ActivityIndicator,
+  View,
+  Text,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '../context/AuthContext';
+import { Ionicons } from '@expo/vector-icons';
+
 import { COLORS } from '../constants/colors';
+import { useAuth } from '../context/AuthContext';
 
 export default function ProfileScreen({ navigation }) {
   const { adminToken, login, logout } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    if (!email.trim() || !password.trim()) {
       Alert.alert('Error', 'Ingresá email y contraseña.');
       return;
     }
     setLoading(true);
     try {
-      await login(email, password);
-    } catch {
-      Alert.alert('Error', 'Credenciales incorrectas.');
+      await login(email.trim(), password);
+      setEmail('');
+      setPassword('');
+    } catch (err) {
+      Alert.alert('Acceso denegado', 'Email o contraseña incorrectos.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (adminToken) {
-    return (
-      <SafeAreaView style={styles.safe}>
-        <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.adminHeader}>
-            <Text style={styles.adminIcon}>🌿</Text>
-            <Text style={styles.adminTitle}>Panel de Administración</Text>
-            <Text style={styles.adminSubtitle}>GrowShop Premium</Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => navigation.navigate('AdminDashboard')}
-          >
-            <Text style={styles.menuItemIcon}>📦</Text>
-            <View style={styles.menuItemText}>
-              <Text style={styles.menuItemTitle}>Gestionar Productos</Text>
-              <Text style={styles.menuItemDesc}>Agregar, editar y eliminar del catálogo</Text>
-            </View>
-            <Text style={styles.menuItemArrow}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => navigation.navigate('AdminOrders')}
-          >
-            <Text style={styles.menuItemIcon}>🧾</Text>
-            <View style={styles.menuItemText}>
-              <Text style={styles.menuItemTitle}>Ver Pedidos</Text>
-              <Text style={styles.menuItemDesc}>Historial y estado de órdenes</Text>
-            </View>
-            <Text style={styles.menuItemArrow}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => navigation.navigate('AdminReprocann')}
-          >
-            <Text style={styles.menuItemIcon}>🏥</Text>
-            <View style={styles.menuItemText}>
-              <Text style={styles.menuItemTitle}>Solicitudes REPROCANN</Text>
-              <Text style={styles.menuItemDesc}>Revisá formularios enviados</Text>
-            </View>
-            <Text style={styles.menuItemArrow}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
-            <Text style={styles.logoutBtnText}>Cerrar sesión</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
+  const handleLogout = () => {
+    Alert.alert('Cerrar sesión', '¿Estás seguro que querés cerrar la sesión de admin?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Cerrar sesión', style: 'destructive', onPress: logout },
+    ]);
+  };
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.infoSection}>
-          <Text style={styles.infoIcon}>🌿</Text>
-          <Text style={styles.infoTitle}>GrowShop Premium</Text>
-          <Text style={styles.infoText}>
-            Equipamiento profesional para cultivadores en Argentina. Todo el catálogo sin semillas.
-          </Text>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.avatar}>
+            <Ionicons name="person" size={32} color={COLORS.white} />
+          </View>
+          <Text style={styles.headerTitle}>GrowShop Premium</Text>
+          <Text style={styles.headerSubtitle}>Cultivo profesional argentino</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.reprocannBtn}
-          onPress={() => navigation.navigate('Reprocann')}
-        >
-          <Text style={styles.reprocannBtnTitle}>🏥 Registro REPROCANN</Text>
-          <Text style={styles.reprocannBtnText}>Registrate y accedé a beneficios exclusivos</Text>
-        </TouchableOpacity>
-
-        <View style={styles.divider} />
-        <Text style={styles.adminLabel}>Acceso Administrador</Text>
-
-        <View style={styles.loginForm}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email admin"
-            placeholderTextColor={COLORS.textMuted}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            placeholderTextColor={COLORS.textMuted}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+        {/* REPROCANN */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>REPROCANN</Text>
+          <Text style={styles.sectionDesc}>
+            Registrado en el programa de uso de cannabis medicinal del ANMAT.
+            Accedé a productos especiales para cultivadores autorizados.
+          </Text>
           <TouchableOpacity
-            style={[styles.loginBtn, loading && { opacity: 0.6 }]}
-            onPress={handleLogin}
-            disabled={loading}
+            style={styles.reprocannButton}
+            onPress={() => navigation.navigate('Reprocann')}
           >
-            {loading
-              ? <ActivityIndicator color="#fff" />
-              : <Text style={styles.loginBtnText}>Ingresar</Text>
-            }
+            <Ionicons name="leaf-outline" size={18} color={COLORS.white} />
+            <Text style={styles.reprocannButtonText}>Acceder como REPROCANN</Text>
+            <Ionicons name="arrow-forward" size={16} color={COLORS.white} />
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.legal}>
-          Venta exclusiva para mayores de 18 años.{'\n'}Cultivo responsable.
-        </Text>
+        {/* Info Cards */}
+        <View style={styles.cardsRow}>
+          <View style={styles.infoCard}>
+            <Ionicons name="shield-checkmark-outline" size={24} color={COLORS.primary} />
+            <Text style={styles.infoCardTitle}>Compras seguras</Text>
+            <Text style={styles.infoCardDesc}>MercadoPago certificado</Text>
+          </View>
+          <View style={styles.infoCard}>
+            <Ionicons name="car-outline" size={24} color={COLORS.primary} />
+            <Text style={styles.infoCardTitle}>Envíos</Text>
+            <Text style={styles.infoCardDesc}>Todo el país</Text>
+          </View>
+        </View>
+
+        {/* Admin Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            {adminToken ? 'Panel Administrador' : 'Acceso Administrador'}
+          </Text>
+
+          {adminToken ? (
+            <View>
+              <View style={styles.adminLoggedIn}>
+                <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
+                <Text style={styles.adminLoggedInText}>Sesión activa</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.adminPanelButton}
+                onPress={() => navigation.navigate('AdminDashboard')}
+              >
+                <Ionicons name="grid-outline" size={18} color={COLORS.white} />
+                <Text style={styles.adminPanelButtonText}>Ir al panel de administración</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                <Ionicons name="log-out-outline" size={16} color={COLORS.error} />
+                <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View>
+              <View style={styles.field}>
+                <Text style={styles.fieldLabel}>Email</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="admin@growshop.ar"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+              <View style={styles.field}>
+                <Text style={styles.fieldLabel}>Contraseña</Text>
+                <View style={styles.passwordContainer}>
+                  <TextInput
+                    style={styles.passwordInput}
+                    placeholder="••••••••"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+                  />
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                    <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={COLORS.textMuted} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <TouchableOpacity
+                style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+                onPress={handleLogin}
+                disabled={loading}
+              >
+                <Ionicons name="log-in-outline" size={18} color={COLORS.white} />
+                <Text style={styles.loginButtonText}>{loading ? 'Ingresando...' : 'Ingresar'}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>GrowShop Premium v1.0.0</Text>
+          <Text style={styles.footerText}>Venta exclusiva para mayores de 18 años</Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: COLORS.background },
-  content: { padding: 20, paddingBottom: 40 },
-  infoSection: { alignItems: 'center', marginBottom: 24 },
-  infoIcon: { fontSize: 48, marginBottom: 8 },
-  infoTitle: { fontSize: 22, fontWeight: '600', color: COLORS.textMain, marginBottom: 6 },
-  infoText: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center', lineHeight: 18 },
-  reprocannBtn: {
-    backgroundColor: COLORS.accentSage, borderRadius: 12, padding: 16,
-    borderWidth: 1, borderColor: COLORS.border, marginBottom: 24,
+  safe: {
+    flex: 1,
+    backgroundColor: COLORS.background,
   },
-  reprocannBtnTitle: { fontSize: 15, fontWeight: '700', color: COLORS.primary, marginBottom: 4 },
-  reprocannBtnText: { fontSize: 12, color: COLORS.textMuted },
-  divider: { height: 1, backgroundColor: COLORS.border, marginBottom: 16 },
-  adminLabel: { fontSize: 11, fontWeight: '700', color: COLORS.textMuted, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 14 },
-  loginForm: { gap: 10 },
+  scroll: {
+    paddingBottom: 32,
+  },
+  header: {
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    paddingTop: 32,
+    paddingBottom: 40,
+    paddingHorizontal: 20,
+  },
+  avatar: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: COLORS.white,
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 13,
+    color: COLORS.accentSage,
+  },
+  section: {
+    backgroundColor: COLORS.surface,
+    marginHorizontal: 16,
+    marginTop: 16,
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: COLORS.textMain,
+    marginBottom: 8,
+  },
+  sectionDesc: {
+    fontSize: 13,
+    color: COLORS.textMuted,
+    lineHeight: 20,
+    marginBottom: 14,
+  },
+  reprocannButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 10,
+  },
+  reprocannButtonText: {
+    flex: 1,
+    color: COLORS.white,
+    fontWeight: '700',
+    fontSize: 14,
+    marginLeft: 10,
+  },
+  cardsRow: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginTop: 16,
+    gap: 12,
+  },
+  infoCard: {
+    flex: 1,
+    backgroundColor: COLORS.surface,
+    borderRadius: 12,
+    padding: 14,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    gap: 6,
+  },
+  infoCardTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.textMain,
+    textAlign: 'center',
+  },
+  infoCardDesc: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    textAlign: 'center',
+  },
+  adminLoggedIn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 14,
+    backgroundColor: '#E8F5E9',
+    padding: 10,
+    borderRadius: 8,
+  },
+  adminLoggedInText: {
+    color: COLORS.success,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  adminPanelButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.primary,
+    paddingVertical: 14,
+    borderRadius: 10,
+    gap: 10,
+    marginBottom: 10,
+  },
+  adminPanelButtonText: {
+    color: COLORS.white,
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    gap: 6,
+  },
+  logoutButtonText: {
+    color: COLORS.error,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  field: {
+    marginBottom: 12,
+  },
+  fieldLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: COLORS.textMain,
+    marginBottom: 6,
+  },
   input: {
-    backgroundColor: COLORS.surface, borderRadius: 10, paddingHorizontal: 14,
-    paddingVertical: 12, fontSize: 15, color: COLORS.textMain,
-    borderWidth: 1, borderColor: COLORS.border, marginBottom: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+    fontSize: 14,
+    color: COLORS.textMain,
+    backgroundColor: COLORS.background,
   },
-  loginBtn: { backgroundColor: COLORS.primary, borderRadius: 10, padding: 14, alignItems: 'center' },
-  loginBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
-  adminHeader: { alignItems: 'center', marginBottom: 28 },
-  adminIcon: { fontSize: 48, marginBottom: 8 },
-  adminTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textMain },
-  adminSubtitle: { fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
-  menuItem: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface,
-    borderRadius: 12, padding: 16, marginBottom: 10,
-    borderWidth: 1, borderColor: COLORS.border,
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 8,
+    backgroundColor: COLORS.background,
   },
-  menuItemIcon: { fontSize: 24, marginRight: 12 },
-  menuItemText: { flex: 1 },
-  menuItemTitle: { fontSize: 15, fontWeight: '600', color: COLORS.textMain },
-  menuItemDesc: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
-  menuItemArrow: { fontSize: 22, color: COLORS.textMuted },
-  logoutBtn: {
-    marginTop: 16, borderWidth: 1.5, borderColor: COLORS.accentEarth,
-    borderRadius: 10, padding: 14, alignItems: 'center',
+  passwordInput: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+    fontSize: 14,
+    color: COLORS.textMain,
   },
-  logoutBtnText: { color: COLORS.accentEarth, fontWeight: '600', fontSize: 15 },
-  legal: { fontSize: 11, color: COLORS.textMuted, textAlign: 'center', lineHeight: 16, marginTop: 24 },
+  eyeButton: {
+    padding: 12,
+  },
+  loginButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.primary,
+    paddingVertical: 14,
+    borderRadius: 10,
+    gap: 10,
+    marginTop: 4,
+  },
+  loginButtonDisabled: {
+    opacity: 0.6,
+  },
+  loginButtonText: {
+    color: COLORS.white,
+    fontWeight: '700',
+    fontSize: 15,
+  },
+  footer: {
+    alignItems: 'center',
+    paddingTop: 24,
+    gap: 4,
+  },
+  footerText: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+  },
 });
