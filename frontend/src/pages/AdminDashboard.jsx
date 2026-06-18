@@ -66,16 +66,22 @@ export default function AdminDashboard() {
     setShowForm(true);
   };
 
+  const [formError, setFormError] = useState(null);
   const saveProduct = async (e) => {
     e.preventDefault();
+    setFormError(null);
     const payload = { ...form, price: Number(form.price), stock: Number(form.stock) };
-    if (editing) {
-      await api.put(`/admin/products/${editing}`, payload);
-    } else {
-      await api.post("/admin/products", payload);
+    try {
+      if (editing) {
+        await api.put(`/admin/products/${editing}`, payload);
+      } else {
+        await api.post("/admin/products", payload);
+      }
+      setShowForm(false);
+      loadAll();
+    } catch (err) {
+      setFormError(err.response?.data?.detail || "Error guardando el producto");
     }
-    setShowForm(false);
-    loadAll();
   };
 
   const removeProduct = async (id) => {
@@ -277,6 +283,7 @@ export default function AdminDashboard() {
                 <input type="checkbox" checked={!!form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} />
                 Destacado en home
               </label>
+              {formError && <p className="text-sm text-earth" data-testid="prod-form-error">{formError}</p>}
               <button data-testid="prod-form-submit" type="submit" className="btn-forest w-full">
                 {editing ? "Guardar cambios" : "Crear producto"}
               </button>

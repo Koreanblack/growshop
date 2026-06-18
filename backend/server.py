@@ -503,7 +503,10 @@ async def admin_me(request: Request):
 @api.post("/admin/products", response_model=Product)
 async def admin_create_product(p: ProductCreate, request: Request):
     await require_admin(request=request)
-    prod = Product(slug=slugify(p.name), images=p.images or [p.image], **p.model_dump())
+    data = p.model_dump()
+    data["slug"] = slugify(p.name)
+    data["images"] = p.images or [p.image]
+    prod = Product(**data)
     doc = prod.model_dump()
     doc["created_at"] = doc["created_at"].isoformat()
     await db.products.insert_one(doc)
