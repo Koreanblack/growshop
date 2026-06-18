@@ -1,0 +1,93 @@
+{
+  "theme": "Light",
+  "archetype": "1 (Organic & Earthy) - Premium Modern Twist",
+  "typography": {
+    "headings": "Outfit",
+    "body": "Manrope",
+    "weights": [
+      "300",
+      "400",
+      "500",
+      "700"
+    ],
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight font-light text-[#0F1A14]",
+      "h2": "text-3xl sm:text-4xl tracking-tight font-medium text-[#0F1A14]",
+      "h3": "text-xl sm:text-2xl font-medium text-[#0F1A14]",
+      "body": "text-base leading-relaxed text-[#5C6B61]",
+      "labels": "text-xs tracking-[0.2em] uppercase font-bold text-[#5C6B61]"
+    }
+  },
+  "colors": {
+    "background": "#F8F9F7",
+    "surface": "#FFFFFF",
+    "primary": "#1A4331",
+    "primary_hover": "#2B5A44",
+    "text_main": "#0F1A14",
+    "text_muted": "#5C6B61",
+    "border": "#E2E5DF",
+    "accent_sage": "#D8E2DC",
+    "accent_earth": "#E07A5F",
+    "mercadopago_blue": "#009EE3"
+  },
+  "spacing_and_layout": {
+    "container_padding": "p-6 sm:p-12 lg:p-20",
+    "gap_large": "gap-12",
+    "gap_medium": "gap-8",
+    "border_radius": "rounded-xl",
+    "card_style": "bg-white border border-[#E2E5DF] shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-shadow duration-300",
+    "hero_grid": "grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center"
+  },
+  "components_strategy": {
+    "navigation": "Crystal Glassmorphism (backdrop-blur-xl bg-white/70) with 1px border-b border-black/5. Sticky top with z-50.",
+    "buttons": "Flat, modern (rounded-md). Primary uses Deep Forest Green (#1A4331) with pure white text. Use slight lift (-translate-y-0.5) on hover.",
+    "product_cards": "Minimalist layout. Image takes up 75% of height, wrapped in a light gray/sage background for contrast. Details below left-aligned. No visible borders unless hovered.",
+    "filters": "Sticky sidebar on desktop, horizontal scroll on mobile. Pill-shaped filter tags with muted backgrounds.",
+    "cart_drawer": "Right-side fixed drawer. Clean list of items, generous spacing. Prominent checkout button with MercadoPago branding.",
+    "reprocann_form": "Shadcn form heavily customized. Use generous padding (p-8). Large touch targets, clear file upload zone with dashed border and sage background.",
+    "admin_panel": "Swiss layout. Dense grids/tables for orders and products. Muted borders, no heavy shadows. Functional clarity over aesthetics."
+  },
+  "motion": {
+    "hover": "transition-all duration-300 ease-out",
+    "page_load": "Framer Motion: fade-in and slide-up (y: 20 -> 0) with slight stagger (0.1s) for grid items.",
+    "drawer": "Slide in from right, ease-in-out, duration 0.3s."
+  },
+  "media": {
+    "hero_image": "https://images.pexels.com/photos/28129603/pexels-photo-28129603.jpeg",
+    "categories": [
+      {
+        "name": "Iluminación LED",
+        "url": "https://images.unsplash.com/photo-1681161528656-5abd54c1eca4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzl8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBMRUQlMjBncm93JTIwbGlnaHR8ZW58MHx8fHwxNzgxNzk5OTE0fDA&ixlib=rb-4.1.0&q=85"
+      },
+      {
+        "name": "Fertilizantes Premium",
+        "url": "https://images.pexels.com/photos/18708750/pexels-photo-18708750.jpeg"
+      },
+      {
+        "name": "Macetas",
+        "url": "https://images.pexels.com/photos/18294113/pexels-photo-18294113.jpeg"
+      },
+      {
+        "name": "Sustratos y Plantas",
+        "url": "https://images.pexels.com/photos/8743845/pexels-photo-8743845.jpeg"
+      }
+    ],
+    "mercadopago_logo_svg_instruction": "Use Lucide icons or a standard text 'Pagar con Mercado Pago' with a #009EE3 background to symbolize the integration."
+  },
+  "accessibility_and_testing": {
+    "contrast": "Ensure white text on #1A4331 passes AA minimum (it does).",
+    "testing_attributes": "All interactive elements MUST have data-testid attributes (e.g., 'add-to-cart-button', 'reprocann-submit', 'mp-checkout')."
+  },
+  "instructions_to_main_agent": [
+    "Build the UI using React and JS (.js/.jsx files, NO TypeScript).",
+    "Use Tailwind CSS for styling. Implement the custom color palette (#1A4331 primary, #F8F9F7 background) directly in tailwind.config.js or via arbitrary values.",
+    "Import 'Outfit' and 'Manrope' from Google Fonts in index.html.",
+    "DO NOT USE INTER, ROBOTO, or standard system fonts.",
+    "CRITICAL RULE: NO SEMILLAS (seeds) in the catalog. Only list equipment: fertilizers, substrates, lights, pots, accessories, pest control, and tools.",
+    "The aesthetic must be PREMIUM and MODERN. Avoid reggae/rasta colors, avoid cartoon marijuana leaves. Think 'high-end botanical laboratory'.",
+    "Implement Google Login for clients.",
+    "Implement the REPROCANN form as a structured multipart form or clean single-page form with file upload.",
+    "Admin panel must have CRUD for products and list of orders.",
+    "Include legal info for Argentina in the Footer (e.g., 'Venta exclusiva para mayores de 18 años. Cultivo responsable.')."
+  ]
+}
