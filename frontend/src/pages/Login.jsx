@@ -25,7 +25,7 @@ export default function Login() {
     <div className="section-pad max-w-md mx-auto">
       <div className="text-center mb-10">
         <p className="label-uppercase mb-3">Acceso clientes</p>
-        <h1 className="font-display text-4xl tracking-tight">Ingresá a Verdor</h1>
+        <h1 className="font-display text-4xl tracking-tight">Ingresá a Lilith Growshop</h1>
         <p className="text-muted mt-3 text-sm">
           Guardá tus pedidos, accedé a tu historial y descuentos REPROCANN.
         </p>

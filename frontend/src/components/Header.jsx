@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingBag, Search, User, LogOut, Leaf } from "lucide-react";
+import { ShoppingBag, Search, User, LogOut } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 
@@ -18,19 +18,24 @@ export default function Header() {
 
   return (
     <header className="glass-nav sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-4 flex items-center gap-6">
-        <Link to="/" data-testid="logo-link" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-full bg-forest flex items-center justify-center">
-            <Leaf className="w-5 h-5 text-white" strokeWidth={1.5} />
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-3 flex items-center gap-6">
+        <Link to="/" data-testid="logo-link" className="flex items-center gap-2.5 group">
+          <img
+            src="/lilith-logo.jpeg"
+            alt="Lilith Growshop"
+            className="w-11 h-11 rounded-full object-cover ring-1 ring-forest/10"
+          />
+          <div className="flex flex-col leading-none">
+            <span className="font-display text-base tracking-[0.18em] font-medium uppercase">Lilith</span>
+            <span className="font-display text-[10px] tracking-[0.32em] text-muted uppercase">Growshop</span>
           </div>
-          <span className="font-display text-xl tracking-tight font-medium">Verdor</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-7 text-sm text-muted">
           <Link to="/catalogo" data-testid="nav-catalog" className="hover:text-ink transition-colors">Catálogo</Link>
           <Link to="/reprocann" data-testid="nav-reprocann" className="hover:text-ink transition-colors">REPROCANN</Link>
           <Link to="/catalogo?cat=iluminacion" className="hover:text-ink transition-colors">Iluminación</Link>
-          <Link to="/catalogo?cat=fertilizantes" className="hover:text-ink transition-colors">Nutrición</Link>
+          <Link to="/catalogo?cat=fertilizantes" className="hover:text-ink transition-colors">Fertilizantes</Link>
         </nav>
 
         <form onSubmit={onSearch} className="hidden lg:flex flex-1 max-w-sm ml-auto relative">

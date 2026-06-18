@@ -25,8 +25,9 @@ export default function Home() {
               <span className="block italic font-normal text-forest">precisión.</span>
             </h1>
             <p className="mt-6 max-w-xl text-base sm:text-lg text-muted leading-relaxed">
-              Equipamiento, nutrición y herramientas de alta gama. Curado por cultivadores,
-              para quienes buscan resultados profesionales en cada cosecha.
+              Equipamiento, fertilizantes y herramientas de alta gama. Creado por cultivadores,
+              para quienes buscan resultados profesionales en cada cosecha y para quienes están
+              dando sus primeros pasos en el cultivo.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Link to="/catalogo" data-testid="hero-shop-btn" className="btn-forest inline-flex items-center gap-2">
@@ -65,7 +66,7 @@ export default function Home() {
                   <p className="label-uppercase text-[0.65rem]">Equipo recomendado</p>
                 </div>
                 <p className="font-display text-lg leading-snug">Kit Indoor Profesional</p>
-                <p className="text-sm text-muted mt-1">Iluminación LED · Sustrato · Nutrición completa</p>
+                <p className="text-sm text-muted mt-1">Iluminación LED · Sustrato · Fertilización completa</p>
               </div>
             </div>
           </div>

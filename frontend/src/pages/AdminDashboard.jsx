@@ -94,7 +94,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-bg">
       <header className="bg-white border-b border-line">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 py-4 flex items-center justify-between">
-          <h1 className="font-display text-2xl">Verdor · Admin</h1>
+          <h1 className="font-display text-2xl">Lilith · Admin</h1>
           <button data-testid="admin-logout" onClick={logout} className="text-sm text-muted hover:text-ink flex items-center gap-1.5">
             <LogOut className="w-4 h-4" /> Salir
           </button>
